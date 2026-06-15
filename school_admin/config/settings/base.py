@@ -74,6 +74,7 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 # Order matters! Security first, then session, then auth, etc.
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -118,17 +119,31 @@ WSGI_APPLICATION = "config.wsgi.application"
 # DATABASE
 # ──────────────────────────────────────────────
 # WHY PostgreSQL? The spec requires it. We read credentials from .env
-# so they never get committed to git.
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": config("DATABASE_NAME", default="school_admin_db"),
-        "USER": config("DATABASE_USER", default="postgres"),
-        "PASSWORD": config("DATABASE_PASSWORD", default=""),
-        "HOST": config("DATABASE_HOST", default="localhost"),
-        "PORT": config("DATABASE_PORT", default="5432"),
+# so they never get committed to git. We also support DATABASE_URL
+# using dj-database-url.
+import dj_database_url
+
+DATABASE_URL = config("DATABASE_URL", default="")
+
+if DATABASE_URL:
+    DATABASES = {
+        "default": dj_database_url.parse(DATABASE_URL)
     }
-}
+    # Ensure ENGINE is explicitly set to postgresql
+    DATABASES["default"]["ENGINE"] = "django.db.backends.postgresql"
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": config("DATABASE_NAME", default="school_admin_db"),
+            "USER": config("DATABASE_USER", default="postgres"),
+            "PASSWORD": config("DATABASE_PASSWORD", default=""),
+            "HOST": config("DATABASE_HOST", default="localhost"),
+            "PORT": config("DATABASE_PORT", default="5432"),
+        }
+    }
+
+
 
 
 # ──────────────────────────────────────────────
