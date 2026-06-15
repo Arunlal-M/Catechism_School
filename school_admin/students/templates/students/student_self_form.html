@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+
+{% block title %}
+{% if is_new %}Complete Profile{% else %}Edit Profile{% endif %} — {{ school_name }}
+{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="mb-6 flex justify-between items-center">
+        <h1 class="text-2xl font-bold text-gray-900">
+            {% if is_new %}Complete Your Profile{% else %}Edit Your Profile{% endif %}
+        </h1>
+        <a href="{% url 'student_self:student_dashboard' %}" class="text-sm text-gray-500 hover:text-gray-700">
+            &larr; Back to Dashboard
+        </a>
+    </div>
+
+    {% if not is_new and student.is_pending %}
+    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+        <div class="flex">
+            <div class="flex-shrink-0">
+                <svg class="h-5 w-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                </svg>
+            </div>
+            <div class="ml-3 text-sm text-yellow-700">
+                Your profile is currently pending review. You can make changes here until it's processed.
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <form method="post" class="space-y-8" novalidate>
+        {% csrf_token %}
+
+        {% if student_form.errors or parent_form.errors or catechism_form.errors %}
+        <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg relative" role="alert">
+            <strong class="font-bold">Please correct the errors below.</strong>
+        </div>
+        {% endif %}
+
+        {# Section 1: Basic Information #}
+        <div class="bg-white shadow-sm rounded-xl border border-gray-200 overflow-hidden">
+            <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
+                <h2 class="text-lg font-medium text-gray-900">1. Basic Information</h2>
+            </div>
+            <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="md:col-span-2">
+                    <label for="{{ student_form.student_name.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Student Name *</label>
+                    {{ student_form.student_name }}
+                    <p class="mt-1 text-sm text-red-600">{{ student_form.student_name.errors.0 }}</p>
+                </div>
+                
+                <div>
+                    <label for="{{ student_form.email.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                    {{ student_form.email }}
+                    <p class="mt-1 text-sm text-red-600">{{ student_form.email.errors.0 }}</p>
+                </div>
+
+                <div>
+                    <label for="{{ student_form.date_of_birth.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Date of Birth *</label>
+                    {{ student_form.date_of_birth }}
+                    <p class="mt-1 text-sm text-red-600">{{ student_form.date_of_birth.errors.0 }}</p>
+                </div>
+
+                <div>
+                    <label for="{{ student_form.gender.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Gender *</label>
+                    {{ student_form.gender }}
+                    <p class="mt-1 text-sm text-red-600">{{ student_form.gender.errors.0 }}</p>
+                </div>
+
+                <div class="md:col-span-2">
+                    <label for="{{ student_form.residential_address.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Residential Address</label>
+                    {{ student_form.residential_address }}
+                    <p class="mt-1 text-sm text-red-600">{{ student_form.residential_address.errors.0 }}</p>
+                </div>
+            </div>
+        </div>
+
+        {# Section 2: Academic & Status #}
+        <div class="bg-white shadow-sm rounded-xl border border-gray-200 overflow-hidden">
+            <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
+                <h2 class="text-lg font-medium text-gray-900">2. Academic Information</h2>
+            </div>
+            <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="{{ student_form.school_class.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Class *</label>
+                    {{ student_form.school_class }}
+                    <p class="mt-1 text-sm text-red-600">{{ student_form.school_class.errors.0 }}</p>
+                </div>
+
+                <div>
+                    <label for="{{ student_form.division.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Division *</label>
+                    {{ student_form.division }}
+                    <p class="mt-1 text-sm text-red-600">{{ student_form.division.errors.0 }}</p>
+                </div>
+            </div>
+        </div>
+
+        {# Section 3: Parent/Guardian Info #}
+        <div class="bg-white shadow-sm rounded-xl border border-gray-200 overflow-hidden">
+            <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
+                <h2 class="text-lg font-medium text-gray-900">3. Parent / Guardian Information</h2>
+            </div>
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                    <div class="space-y-4">
+                        <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wider border-b pb-2">Father's Details</h3>
+                        <div>
+                            <label for="{{ parent_form.father_name.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Father's Name</label>
+                            {{ parent_form.father_name }}
+                            <p class="mt-1 text-sm text-red-600">{{ parent_form.father_name.errors.0 }}</p>
+                        </div>
+                        <div>
+                            <label for="{{ parent_form.father_phone.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Father's Phone</label>
+                            {{ parent_form.father_phone }}
+                            <p class="mt-1 text-sm text-red-600">{{ parent_form.father_phone.errors.0 }}</p>
+                        </div>
+                        <div>
+                            <label for="{{ parent_form.father_occupation.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Occupation</label>
+                            {{ parent_form.father_occupation }}
+                            <p class="mt-1 text-sm text-red-600">{{ parent_form.father_occupation.errors.0 }}</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wider border-b pb-2">Mother's Details</h3>
+                        <div>
+                            <label for="{{ parent_form.mother_name.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Mother's Name</label>
+                            {{ parent_form.mother_name }}
+                            <p class="mt-1 text-sm text-red-600">{{ parent_form.mother_name.errors.0 }}</p>
+                        </div>
+                        <div>
+                            <label for="{{ parent_form.mother_phone.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Mother's Phone</label>
+                            {{ parent_form.mother_phone }}
+                            <p class="mt-1 text-sm text-red-600">{{ parent_form.mother_phone.errors.0 }}</p>
+                        </div>
+                        <div>
+                            <label for="{{ parent_form.mother_occupation.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Occupation</label>
+                            {{ parent_form.mother_occupation }}
+                            <p class="mt-1 text-sm text-red-600">{{ parent_form.mother_occupation.errors.0 }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# Section 4: Catechism Info #}
+        <div class="bg-white shadow-sm rounded-xl border border-gray-200 overflow-hidden">
+            <div class="bg-gray-50 px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+                <h2 class="text-lg font-medium text-gray-900">4. Catechism Information</h2>
+                <div class="flex items-center space-x-2">
+                    {{ student_form.attended_catechism }}
+                    <label for="{{ student_form.attended_catechism.id_for_label }}" class="text-sm font-medium text-gray-700">Attended Catechism?</label>
+                </div>
+            </div>
+            
+            <div class="p-6 grid grid-cols-1 md:grid-cols-3 gap-6" id="catechism-fields" style="{% if not student_form.attended_catechism.value %}opacity: 0.5; pointer-events: none;{% endif %}">
+                <div>
+                    <label for="{{ catechism_form.catechism_teacher_name.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Teacher Name</label>
+                    {{ catechism_form.catechism_teacher_name }}
+                    <p class="mt-1 text-sm text-red-600">{{ catechism_form.catechism_teacher_name.errors.0 }}</p>
+                </div>
+                <div>
+                    <label for="{{ catechism_form.provision.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Provision</label>
+                    {{ catechism_form.provision }}
+                    <p class="mt-1 text-sm text-red-600">{{ catechism_form.provision.errors.0 }}</p>
+                </div>
+                <div>
+                    <label for="{{ catechism_form.unit.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Unit</label>
+                    {{ catechism_form.unit }}
+                    <p class="mt-1 text-sm text-red-600">{{ catechism_form.unit.errors.0 }}</p>
+                </div>
+            </div>
+            
+            <script>
+                document.getElementById('{{ student_form.attended_catechism.id_for_label }}').addEventListener('change', function() {
+                    const fields = document.getElementById('catechism-fields');
+                    if (this.checked) {
+                        fields.style.opacity = '1';
+                        fields.style.pointerEvents = 'auto';
+                    } else {
+                        fields.style.opacity = '0.5';
+                        fields.style.pointerEvents = 'none';
+                    }
+                });
+            </script>
+        </div>
+
+        {# Form actions #}
+        <div class="flex justify-end gap-3 pt-6 border-t border-gray-200">
+            <a href="{% url 'student_self:student_dashboard' %}" 
+               class="px-6 py-2.5 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium transition-colors">
+                Cancel
+            </a>
+            <button type="submit" class="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors shadow-sm">
+                Submit for Approval
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

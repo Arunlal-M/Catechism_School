@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+
+{% block title %}{{ student.student_name }} — {{ school_name }}{% endblock %}
+
+{% block content %}
+{# Header with actions #}
+<div class="flex justify-between items-start mb-6">
+    <div>
+        <div class="flex items-center space-x-3">
+            <h1 class="text-3xl font-bold text-gray-900">{{ student.student_name }}</h1>
+            <span class="inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium
+                {% if student.status == 'active' %}bg-green-100 text-green-800
+                {% elif student.status == 'pending' %}bg-yellow-100 text-yellow-800
+                {% else %}bg-gray-100 text-gray-800{% endif %}">
+                {{ student.get_status_display }}
+            </span>
+        </div>
+        <p class="mt-1 text-sm text-gray-500 font-mono">ID: {{ student.student_number|default:"Not assigned" }}</p>
+    </div>
+    <div class="flex space-x-3">
+        <a href="{% url 'students:student_update' student.pk %}" class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 text-sm font-medium transition-colors">
+            Edit
+        </a>
+        <!-- <a href="{% url 'students:student_delete' student.pk %}" class="px-4 py-2 bg-red-50 border border-red-200 text-red-700 rounded-lg hover:bg-red-100 text-sm font-medium transition-colors">
+            Deactivate
+        </a> -->
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    {# Left column: Main profile info #}
+    <div class="lg:col-span-2 space-y-6">
+        {# Personal Info Card #}
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                <h2 class="text-lg font-semibold text-gray-900">Personal Information</h2>
+            </div>
+            <div class="p-6">
+                <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-6">
+                    <div>
+                        <dt class="text-sm font-medium text-gray-500">Email Address</dt>
+                        <dd class="mt-1 text-sm text-gray-900">{{ student.email|default:"-" }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-sm font-medium text-gray-500">Gender</dt>
+                        <dd class="mt-1 text-sm text-gray-900">{{ student.get_gender_display }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-sm font-medium text-gray-500">Date of Birth</dt>
+                        <dd class="mt-1 text-sm text-gray-900">{{ student.date_of_birth|date:"F j, Y"|default:"-" }}</dd>
+                    </div>
+                    <div class="sm:col-span-2">
+                        <dt class="text-sm font-medium text-gray-500">Residential Address</dt>
+                        <dd class="mt-1 text-sm text-gray-900">{{ student.residential_address|linebreaksbr|default:"-" }}</dd>
+                    </div>
+                </dl>
+            </div>
+        </div>
+
+        {# Parent Info Card #}
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                <h2 class="text-lg font-semibold text-gray-900">Parent / Guardian Information</h2>
+            </div>
+            <div class="p-6">
+                {% if student.parent_info %}
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                    {# Father #}
+                    <div>
+                        <h3 class="text-sm font-bold text-gray-900 mb-4 border-b pb-2">Father's Details</h3>
+                        <dl class="space-y-4">
+                            <div>
+                                <dt class="text-sm font-medium text-gray-500">Name</dt>
+                                <dd class="mt-1 text-sm text-gray-900">{{ student.parent_info.father_name|default:"-" }}</dd>
+                            </div>
+                            <div>
+                                <dt class="text-sm font-medium text-gray-500">Phone</dt>
+                                <dd class="mt-1 text-sm text-gray-900">{{ student.parent_info.father_phone|default:"-" }}</dd>
+                            </div>
+                            <div>
+                                <dt class="text-sm font-medium text-gray-500">Occupation</dt>
+                                <dd class="mt-1 text-sm text-gray-900">{{ student.parent_info.father_occupation|default:"-" }}</dd>
+                            </div>
+                        </dl>
+                    </div>
+                    {# Mother #}
+                    <div>
+                        <h3 class="text-sm font-bold text-gray-900 mb-4 border-b pb-2">Mother's Details</h3>
+                        <dl class="space-y-4">
+                            <div>
+                                <dt class="text-sm font-medium text-gray-500">Name</dt>
+                                <dd class="mt-1 text-sm text-gray-900">{{ student.parent_info.mother_name|default:"-" }}</dd>
+                            </div>
+                            <div>
+                                <dt class="text-sm font-medium text-gray-500">Phone</dt>
+                                <dd class="mt-1 text-sm text-gray-900">{{ student.parent_info.mother_phone|default:"-" }}</dd>
+                            </div>
+                            <div>
+                                <dt class="text-sm font-medium text-gray-500">Occupation</dt>
+                                <dd class="mt-1 text-sm text-gray-900">{{ student.parent_info.mother_occupation|default:"-" }}</dd>
+                            </div>
+                        </dl>
+                    </div>
+                </div>
+                {% else %}
+                <p class="text-sm text-gray-500 italic">No parent information available.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        {# Remarks Card #}
+        {% if student.remarks %}
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                <h2 class="text-lg font-semibold text-gray-900">Remarks & Notes</h2>
+            </div>
+            <div class="p-6">
+                <p class="text-sm text-gray-900 whitespace-pre-wrap">{{ student.remarks }}</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    {# Right column: Academic & System info #}
+    <div class="space-y-6">
+        {# Academic & Catechism #}
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                <h2 class="text-lg font-semibold text-gray-900">Academic & Catechism</h2>
+            </div>
+            <div class="p-6 space-y-6">
+                <dl class="space-y-4">
+                    <div>
+                        <dt class="text-sm font-medium text-gray-500">Class</dt>
+                        <dd class="mt-1 text-base font-medium text-gray-900">{{ student.school_class.name }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-sm font-medium text-gray-500">Division</dt>
+                        <dd class="mt-1 text-base font-medium text-gray-900">{{ student.division.name }}</dd>
+                    </div>
+                </dl>
+
+                <div class="border-t border-gray-200 pt-4">
+                    <dl class="space-y-4">
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500">Attended Catechism?</dt>
+                            <dd class="mt-1 text-sm text-gray-900">
+                                {% if student.attended_catechism %}
+                                <span class="text-green-600 font-medium">Yes</span>
+                                {% else %}
+                                <span class="text-gray-500">No</span>
+                                {% endif %}
+                            </dd>
+                        </div>
+                        {% if student.attended_catechism and student.catechism_info %}
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500">Catechism Teacher</dt>
+                            <dd class="mt-1 text-sm text-gray-900">{{ student.catechism_info.catechism_teacher_name|default:"-" }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500">Provision (Pradeshikam)</dt>
+                            <dd class="mt-1 text-sm text-gray-900">{{ student.catechism_info.provision.name|default:"-" }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500">Unit</dt>
+                            <dd class="mt-1 text-sm text-gray-900">{{ student.catechism_info.unit.name|default:"-" }}</dd>
+                        </div>
+                        {% endif %}
+                    </dl>
+                </div>
+            </div>
+        </div>
+
+        {# System Info #}
+        <div class="bg-gray-50 rounded-xl border border-gray-200 p-6">
+            <h3 class="text-sm font-bold text-gray-900 mb-4 uppercase tracking-wider">System Information</h3>
+            <dl class="space-y-3 text-sm">
+                <div class="flex justify-between">
+                    <dt class="text-gray-500">Created At</dt>
+                    <dd class="text-gray-900">{{ student.created_at|date:"M j, Y H:i" }}</dd>
+                </div>
+                <div class="flex justify-between">
+                    <dt class="text-gray-500">Created By</dt>
+                    <dd class="text-gray-900">{{ student.created_by.email|default:"System" }}</dd>
+                </div>
+                <div class="flex justify-between border-t border-gray-200 pt-3">
+                    <dt class="text-gray-500">Last Updated</dt>
+                    <dd class="text-gray-900">{{ student.updated_at|date:"M j, Y H:i" }}</dd>
+                </div>
+                <div class="flex justify-between">
+                    <dt class="text-gray-500">Updated By</dt>
+                    <dd class="text-gray-900">{{ student.updated_by.email|default:"System" }}</dd>
+                </div>
+                {% if student.user %}
+                <div class="flex justify-between border-t border-gray-200 pt-3">
+                    <dt class="text-gray-500">Linked Account</dt>
+                    <dd class="text-blue-600 truncate ml-2" title="{{ student.user.email }}">{{ student.user.email }}</dd>
+                </div>
+                {% endif %}
+            </dl>
+        </div>
+    </div>
+</div>
+{% endblock %}

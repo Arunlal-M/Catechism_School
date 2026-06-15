@@ -1,0 +1,25 @@
+services:
+  db:
+    image: postgres:17
+    container_name: school_postgres
+    restart: unless-stopped
+    environment:
+      # These must exactly match the DATABASE_ settings in your school_admin/.env file
+      POSTGRES_DB: school_admin_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      # Mapping the data to the local 'postgres' folder we just created
+      # This ensures your database isn't deleted if the container is removed
+      - ./postgres:/var/lib/postgresql/data
+
+  adminer:
+    image: adminer
+    container_name: school_adminer
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db

@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Delete Admin — {{ school_name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto mt-8">
+    <div class="bg-white rounded-xl shadow-sm border border-red-200 overflow-hidden">
+        <div class="bg-red-50 px-6 py-4 border-b border-red-200">
+            <h2 class="text-xl font-bold text-red-800 flex items-center">
+                <svg class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+                Confirm Deletion
+            </h2>
+        </div>
+        
+        <div class="p-6">
+            <p class="text-gray-700 mb-4 text-lg">
+                Are you absolutely sure you want to delete the admin account for <strong>{{ admin_user.email }}</strong>?
+            </p>
+            <p class="text-red-600 text-sm font-medium mb-6">
+                Warning: This action cannot be undone. If you just want to prevent them from logging in, consider <a href="{% url 'accounts:admin_update' admin_user.pk %}" class="underline">deactivating</a> them instead.
+            </p>
+
+            <form method="post" class="flex items-center space-x-4">
+                {% csrf_token %}
+                <button type="submit" class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium transition-colors shadow-sm">
+                    Yes, Delete Permanently
+                </button>
+                <a href="{% url 'accounts:admin_list' %}" class="px-6 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium transition-colors">
+                    Cancel
+                </a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}My Dashboard — {{ school_name }}{% endblock %}
+
+{% block content %}
+<div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900">My Dashboard</h1>
+    <p class="mt-1 text-sm text-gray-600">Welcome, {{ user.get_full_name|default:user.email }}!</p>
+</div>
+
+{% if student %}
+    {# Show their profile status #}
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-6">
+        <div class="p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-bold text-gray-900">My Record</h2>
+                <span class="inline-flex px-3 py-1 rounded-full text-sm font-medium
+                    {% if student.status == 'active' %}bg-green-100 text-green-800
+                    {% elif student.status == 'pending' %}bg-yellow-100 text-yellow-800
+                    {% else %}bg-gray-100 text-gray-800{% endif %}">
+                    Status: {{ student.get_status_display }}
+                </span>
+            </div>
+            
+            {% if student.is_pending %}
+            <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm text-yellow-700">
+                            Your record is pending review. You can update your contact information before it's finalized.
+                        </p>
+                        <p class="mt-2 text-sm">
+                            <a href="{% url 'student_self:student_self_form' %}" class="font-medium text-yellow-700 hover:text-yellow-600 underline">
+                                Update My Information &rarr;
+                            </a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+                <div>
+                    <h3 class="text-gray-500 font-medium mb-1">Student Details</h3>
+                    <p><strong>Name:</strong> {{ student.student_name }}</p>
+                    <p><strong>ID:</strong> {{ student.student_number|default:"Not assigned" }}</p>
+                    <p><strong>Class:</strong> {{ student.school_class.name }} - {{ student.division.name }}</p>
+                    <p><strong>DOB:</strong> {{ student.date_of_birth|date:"F j, Y" }}</p>
+                </div>
+                <div>
+                    <h3 class="text-gray-500 font-medium mb-1">Contact & Address</h3>
+                    <p><strong>Email:</strong> {{ student.email|default:"-" }}</p>
+                    <p><strong>Father's Phone:</strong> {{ student.parent_info.father_phone|default:"-" }}</p>
+                    <p><strong>Mother's Phone:</strong> {{ student.parent_info.mother_phone|default:"-" }}</p>
+                    <p><strong>Address:</strong> {{ student.residential_address|default:"-" }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% else %}
+    {# No linked student record #}
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center">
+        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 21h7a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v11m0 5l4.879-4.879m0 0a3 3 0 104.243-4.242 3 3 0 00-4.243 4.242z" />
+        </svg>
+        <h3 class="mt-2 text-lg font-medium text-gray-900">No Profile Found</h3>
+        <p class="mt-1 text-sm text-gray-500">
+            You haven't filled out your student profile yet. Please complete your registration.
+        </p>
+        <div class="mt-6">
+            <a href="{% url 'student_self:student_self_form' %}" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
+                Complete Profile
+            </a>
+        </div>
+    </div>
+{% endif %}
+{% endblock %}

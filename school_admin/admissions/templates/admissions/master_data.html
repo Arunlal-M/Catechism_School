@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+
+{% block title %}Master Data — {{ school_name }}{% endblock %}
+
+{% block content %}
+<div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900">Master Data Management</h1>
+    <p class="mt-1 text-sm text-gray-600">Manage lookup tables for the application.</p>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+    
+    {# Classes #}
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200 bg-gray-50 flex justify-between items-center">
+            <h2 class="text-lg font-semibold text-gray-900">Classes</h2>
+        </div>
+        <div class="p-6">
+            <form method="post" action="{% url 'admissions:class_create' %}" class="flex gap-2 mb-4">
+                {% csrf_token %}
+                <div class="flex-1">{{ class_form.name }}</div>
+                <div class="w-24">{{ class_form.order }}</div>
+                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">Add</button>
+            </form>
+            <ul class="divide-y divide-gray-200 border rounded-lg max-h-64 overflow-y-auto">
+                {% for cls in classes %}
+                <li class="p-3 flex justify-between items-center hover:bg-gray-50">
+                    <div>
+                        <span class="font-medium text-gray-900">{{ cls.name }}</span>
+                        <span class="text-xs text-gray-500 ml-2">Order: {{ cls.order }}</span>
+                    </div>
+                    <form method="post" action="{% url 'admissions:class_delete' cls.pk %}" onsubmit="return confirm('Delete this class?');">
+                        {% csrf_token %}
+                        <button type="submit" class="text-red-500 hover:text-red-700 text-sm">Delete</button>
+                    </form>
+                </li>
+                {% empty %}
+                <li class="p-3 text-sm text-gray-500 text-center">No classes defined.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    {# Divisions #}
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200 bg-gray-50 flex justify-between items-center">
+            <h2 class="text-lg font-semibold text-gray-900">Divisions</h2>
+        </div>
+        <div class="p-6">
+            <form method="post" action="{% url 'admissions:division_create' %}" class="flex gap-2 mb-4">
+                {% csrf_token %}
+                <div class="flex-1">{{ division_form.name }}</div>
+                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">Add</button>
+            </form>
+            <ul class="divide-y divide-gray-200 border rounded-lg max-h-64 overflow-y-auto">
+                {% for div in divisions %}
+                <li class="p-3 flex justify-between items-center hover:bg-gray-50">
+                    <span class="font-medium text-gray-900">{{ div.name }}</span>
+                    <form method="post" action="{% url 'admissions:division_delete' div.pk %}" onsubmit="return confirm('Delete this division?');">
+                        {% csrf_token %}
+                        <button type="submit" class="text-red-500 hover:text-red-700 text-sm">Delete</button>
+                    </form>
+                </li>
+                {% empty %}
+                <li class="p-3 text-sm text-gray-500 text-center">No divisions defined.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    {# Occupations #}
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200 bg-gray-50 flex justify-between items-center">
+            <h2 class="text-lg font-semibold text-gray-900">Occupations</h2>
+        </div>
+        <div class="p-6">
+            <form method="post" action="{% url 'admissions:occupation_create' %}" class="flex gap-2 mb-4">
+                {% csrf_token %}
+                <div class="flex-1">{{ occupation_form.name }}</div>
+                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">Add</button>
+            </form>
+            <ul class="divide-y divide-gray-200 border rounded-lg max-h-64 overflow-y-auto">
+                {% for occ in occupations %}
+                <li class="p-3 flex justify-between items-center hover:bg-gray-50">
+                    <span class="font-medium text-gray-900">{{ occ.name }}</span>
+                    <form method="post" action="{% url 'admissions:occupation_delete' occ.pk %}" onsubmit="return confirm('Delete this occupation?');">
+                        {% csrf_token %}
+                        <button type="submit" class="text-red-500 hover:text-red-700 text-sm">Delete</button>
+                    </form>
+                </li>
+                {% empty %}
+                <li class="p-3 text-sm text-gray-500 text-center">No occupations defined.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    {# Provisions #}
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200 bg-gray-50 flex justify-between items-center">
+            <h2 class="text-lg font-semibold text-gray-900">Provisions (Pradeshikam)</h2>
+        </div>
+        <div class="p-6">
+            <form method="post" action="{% url 'admissions:provision_create' %}" class="flex gap-2 mb-4">
+                {% csrf_token %}
+                <div class="flex-1">{{ provision_form.name }}</div>
+                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">Add</button>
+            </form>
+            <ul class="divide-y divide-gray-200 border rounded-lg max-h-64 overflow-y-auto">
+                {% for prov in provisions %}
+                <li class="p-3 flex justify-between items-center hover:bg-gray-50">
+                    <span class="font-medium text-gray-900">{{ prov.name }}</span>
+                    <form method="post" action="{% url 'admissions:provision_delete' prov.pk %}" onsubmit="return confirm('Delete this provision?');">
+                        {% csrf_token %}
+                        <button type="submit" class="text-red-500 hover:text-red-700 text-sm">Delete</button>
+                    </form>
+                </li>
+                {% empty %}
+                <li class="p-3 text-sm text-gray-500 text-center">No provisions defined.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    {# Units #}
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200 bg-gray-50 flex justify-between items-center">
+            <h2 class="text-lg font-semibold text-gray-900">Units</h2>
+        </div>
+        <div class="p-6">
+            <form method="post" action="{% url 'admissions:unit_create' %}" class="flex gap-2 mb-4">
+                {% csrf_token %}
+                <div class="flex-1">{{ unit_form.provision }}</div>
+                <div class="flex-1">{{ unit_form.name }}</div>
+                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">Add</button>
+            </form>
+            <ul class="divide-y divide-gray-200 border rounded-lg max-h-64 overflow-y-auto">
+                {% for unit in units %}
+                <li class="p-3 flex justify-between items-center hover:bg-gray-50">
+                    <div>
+                        <span class="font-medium text-gray-900">{{ unit.name }}</span>
+                        <span class="text-xs text-gray-500 ml-2">({{ unit.provision.name }})</span>
+                    </div>
+                    <form method="post" action="{% url 'admissions:unit_delete' unit.pk %}" onsubmit="return confirm('Delete this unit?');">
+                        {% csrf_token %}
+                        <button type="submit" class="text-red-500 hover:text-red-700 text-sm">Delete</button>
+                    </form>
+                </li>
+                {% empty %}
+                <li class="p-3 text-sm text-gray-500 text-center">No units defined.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

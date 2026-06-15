@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Admins — {{ school_name }}{% endblock %}
+
+{% block content %}
+<div class="mb-8 flex justify-between items-center">
+    <div>
+        <h1 class="text-3xl font-bold text-gray-900">Manage Admins</h1>
+        <p class="mt-1 text-sm text-gray-600">Approve, deactivate, or create new admin accounts.</p>
+    </div>
+    <a href="{% url 'accounts:admin_create' %}" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium transition-colors">
+        + Add New Admin
+    </a>
+</div>
+
+<div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for admin_user in admins %}
+                <tr class="hover:bg-gray-50 {% if not admin_user.is_active %}bg-red-50{% endif %}">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        {{ admin_user.get_full_name|default:"-" }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {{ admin_user.email }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        {% if admin_user.is_active %}
+                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Active</span>
+                        {% else %}
+                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">Pending Approval</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2 flex">
+                        {% if not admin_user.is_active %}
+                        <form method="post" action="{% url 'accounts:admin_approve' admin_user.pk %}">
+                            {% csrf_token %}
+                            <button type="submit" class="text-green-600 hover:text-green-900 mr-2 border border-green-600 px-2 py-1 rounded bg-green-50 hover:bg-green-100">Approve</button>
+                        </form>
+                        {% endif %}
+                        <a href="{% url 'accounts:admin_update' admin_user.pk %}" class="text-indigo-600 hover:text-indigo-900 mr-2 flex items-center">Edit/Deactivate</a>
+                        <a href="{% url 'accounts:admin_delete' admin_user.pk %}" class="text-red-600 hover:text-red-900 flex items-center">Delete</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="px-6 py-8 text-center text-gray-500">No other admins found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

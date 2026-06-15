@@ -1,0 +1,30 @@
+# Python / Virtual Environment
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.egg
+
+# Database data directories
+infra/postgres/
+
+# Django
+school_admin/db.sqlite3
+school_admin/staticfiles/
+school_admin/media/imports/*
+!school_admin/media/imports/.gitkeep
+
+# Environment secrets
+.env
+school_admin/.env
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db

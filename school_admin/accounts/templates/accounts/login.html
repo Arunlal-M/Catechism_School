@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Login — {{ school_name }}{% endblock %}
+
+{% block content %}
+<div class="min-h-[80vh] flex items-center justify-center">
+    <div class="max-w-md w-full space-y-8">
+        {# Logo and title #}
+        <div class="text-center">
+            <img src="{% static 'images/church_logo.png' %}" alt="Logo" class="mx-auto h-16 w-16 object-cover rounded-lg">
+            <h1 class="mt-4 text-3xl font-bold text-gray-900">{{ school_name }}</h1>
+            <p class="mt-2 text-sm text-gray-600">Sign in to your account</p>
+        </div>
+
+        {# Login form #}
+        <div class="bg-white shadow-lg rounded-xl p-8 border border-gray-100">
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+
+                {# Show form errors #}
+                {% if form.errors %}
+                <div class="bg-red-50 text-red-700 border border-red-200 rounded-lg p-4 text-sm">
+                    Invalid email or password. Please try again.
+                </div>
+                {% endif %}
+
+                {# Email field #}
+                <div>
+                    <label for="id_username" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                    {{ form.username }}
+                </div>
+
+                {# Password field #}
+                <div>
+                    <label for="id_password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                    {{ form.password }}
+                </div>
+
+                {# Submit button #}
+                <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
+                    Sign in
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

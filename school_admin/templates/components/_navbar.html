@@ -1,0 +1,65 @@
+{# Navigation bar — role-aware menu #}
+{% load static %}
+<nav class="bg-white shadow-sm border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+            {# Logo / Brand #}
+            <div class="flex items-center">
+                <a href="/" class="flex items-center space-x-2">
+                    <img src="{% static 'images/church_logo.png' %}" alt="Logo" class="h-8 w-8 object-cover rounded">
+                    <span class="text-xl font-bold text-gray-900">{{ school_name }}</span>
+                </a>
+            </div>
+
+            {# Navigation links — different for admin vs student #}
+            <div class="hidden md:flex items-center space-x-4">
+                {% if user.is_admin %}
+                    <a href="{% url 'admin_dashboard' %}" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Dashboard</a>
+                    <a href="{% url 'students:student_list' %}" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Students</a>
+                    <a href="{% url 'admissions:master_data' %}" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Master Data</a>
+                    <a href="{% url 'imports:upload' %}" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Import</a>
+                    <a href="{% url 'imports:export' %}" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Export</a>
+                    
+                    {# Notification Bell #}
+                    {% if total_notifications > 0 %}
+                    <div class="relative flex items-center">
+                        <a href="{% if pending_admins_count > 0 %}{% url 'accounts:admin_list' %}{% else %}{% url 'students:student_list' %}?status=pending{% endif %}" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md transition-colors relative">
+                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                            </svg>
+                            <span class="absolute top-1 right-2 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">
+                                {{ total_notifications }}
+                            </span>
+                        </a>
+                    </div>
+                    {% endif %}
+                {% else %}
+                    <a href="{% url 'student_self:student_dashboard' %}" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">My Dashboard</a>
+                {% endif %}
+            </div>
+
+            {# User menu #}
+            <div class="flex items-center space-x-3">
+                <a href="{% url 'accounts:profile' %}" class="text-gray-600 hover:text-blue-600 text-sm font-medium transition-colors">
+                    {{ user.get_full_name|default:user.email }}
+                </a>
+                <a href="{% url 'accounts:logout' %}" class="bg-red-50 text-red-600 hover:bg-red-100 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                    Logout
+                </a>
+            </div>
+        </div>
+    </div>
+
+    {# Mobile menu #}
+    <div class="md:hidden border-t border-gray-200 px-4 py-3 space-y-1">
+        {% if user.is_admin %}
+            <a href="{% url 'admin_dashboard' %}" class="block text-gray-600 hover:text-blue-600 py-2 text-sm font-medium">Dashboard</a>
+            <a href="{% url 'students:student_list' %}" class="block text-gray-600 hover:text-blue-600 py-2 text-sm font-medium">Students</a>
+            <a href="{% url 'admissions:master_data' %}" class="block text-gray-600 hover:text-blue-600 py-2 text-sm font-medium">Master Data</a>
+            <a href="{% url 'imports:upload' %}" class="block text-gray-600 hover:text-blue-600 py-2 text-sm font-medium">Import</a>
+            <a href="{% url 'imports:export' %}" class="block text-gray-600 hover:text-blue-600 py-2 text-sm font-medium">Export</a>
+        {% else %}
+            <a href="{% url 'student_self:student_dashboard' %}" class="block text-gray-600 hover:text-blue-600 py-2 text-sm font-medium">My Dashboard</a>
+        {% endif %}
+    </div>
+</nav>
